@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -13,11 +13,12 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardComponent from "./components/card";
-import Cards, { quatroCards } from "./cards";
+import Cards, { quatroCards, CardsPagination } from "./cards";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import Slide from "@material-ui/core/Slide";
 import PropTypes from "prop-types";
 import CarrosselComponent from "./components/carrossel";
+import Pagination from "@material-ui/lab/Pagination";
 const useStyles = makeStyles((theme) => ({
   appBar: {
     backgroundColor: "#607D8B",
@@ -58,6 +59,11 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
     margin: "auto",
   },
+  pagination: {
+    backgroundColor: "#fff",
+    marginBottom: theme.spacing(3),
+    marginTop: theme.spacing(3),
+  },
 }));
 
 function HideOnScroll(props) {
@@ -86,6 +92,21 @@ HideOnScroll.propTypes = {
 
 export default (props) => {
   const classes = useStyles();
+  const [iniPrim, setiniPrim] = useState(0);
+  //const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
+  const [cards, setCards] = useState(CardsPagination(4, iniPrim));
+  const [cards2, setCards2] = useState(CardsPagination(4, iniPrim));
+  const handleChange = (event, value) => {
+    setPage(value);
+    setCards(CardsPagination(4, Math.floor(Math.random() * 10 + 1)));
+    setCards2(
+      CardsPagination(
+        Math.floor(Math.random() * 6 + 5),
+        Math.floor(Math.random() * 10 + 1)
+      )
+    );
+  };
   return (
     <div className="App">
       <HideOnScroll {...props}>
@@ -105,11 +126,17 @@ export default (props) => {
         <Box>React Blog</Box>
       </Box>
       <Container maxWidth="lg" className={classes.blogsContainer}>
+        <Pagination
+          count={300}
+          page={page}
+          onChange={handleChange}
+          className={classes.pagination}
+        />
         <Typography variant="h4" className={classes.blogTitle}>
-          Hud
+          Hud <Typography>Page: {page}</Typography>
         </Typography>
         <Grid container spacing={2}>
-          {quatroCards().map((item, index) => (
+          {cards.map((item, index) => (
             <CardComponent
               text={item.text}
               image={item.image}
@@ -117,7 +144,7 @@ export default (props) => {
             ></CardComponent>
           ))}
           <CarrosselComponent></CarrosselComponent>
-          {Cards.map((item, index) => (
+          {cards2.map((item, index) => (
             <CardComponent
               text={item.text}
               image={item.image}
@@ -125,6 +152,12 @@ export default (props) => {
             ></CardComponent>
           ))}
         </Grid>
+        <Pagination
+          className={classes.pagination}
+          count={300}
+          page={page}
+          onChange={handleChange}
+        />
       </Container>
     </div>
   );
